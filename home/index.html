@@ -4,89 +4,201 @@
   <meta charset="UTF-8">
   <title>Jeggy Ocenar | Portfolio</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/home/css/style.css">
 </head>
-<body>
+<body class="dark">
 
 <div id="app">
 
-  <!-- NAVBAR -->
-  <div class="navbar">
-    <div class="logo">Jeggy.dev</div>
+  <!-- TOAST NOTIFICATION -->
+  <transition name="toast">
+    <div v-if="toast.show" :class="['toast', toast.type]">
+      {{ toast.message }}
+    </div>
+  </transition>
 
-    <div class="nav-links">
+  <!-- NAVBAR -->
+  <nav class="navbar" :class="{ scrolled: isScrolled }">
+    <div class="logo">
+      <span class="logo-bracket">&lt;</span>jeggy<span class="logo-bracket">/&gt;</span>
+    </div>
+
+    <!-- DESKTOP NAV -->
+    <div class="nav-links desktop-nav">
       <a @click="scrollTo('about')">About</a>
       <a @click="scrollTo('skills')">Skills</a>
       <a @click="scrollTo('projects')">Projects</a>
       <a @click="scrollTo('guestbook')">Guestbook</a>
-      <button @click="toggleDark">
-        {{ isDark ? "Light Mode" : "Dark Mode" }}
+      <button class="theme-btn" @click="toggleDark">
+        <span v-if="isDark">☀ Light</span>
+        <span v-else>☾ Dark</span>
       </button>
     </div>
-  </div>
+
+    <!-- MOBILE HAMBURGER -->
+    <button class="hamburger" @click="menuOpen = !menuOpen" :class="{ open: menuOpen }">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- MOBILE MENU OVERLAY -->
+  <transition name="slide">
+    <div v-if="menuOpen" class="mobile-menu">
+      <a @click="scrollTo('about'); menuOpen = false">About</a>
+      <a @click="scrollTo('skills'); menuOpen = false">Skills</a>
+      <a @click="scrollTo('projects'); menuOpen = false">Projects</a>
+      <a @click="scrollTo('guestbook'); menuOpen = false">Guestbook</a>
+      <button class="theme-btn" @click="toggleDark; menuOpen = false">
+        <span v-if="isDark">☀ Light Mode</span>
+        <span v-else>☾ Dark Mode</span>
+      </button>
+    </div>
+  </transition>
 
   <!-- HERO -->
   <section class="hero">
-    <h1>{{ name }}</h1>
-    <h2>{{ role }}</h2>
-    <p>Aspiring Systems Architect | Backend Developer</p>
+    <div class="hero-tag">Available for internships 2025</div>
+    <h1 class="hero-name">{{ name }}</h1>
+    <h2 class="hero-role">{{ role }}</h2>
+    <p class="hero-sub">Building backend systems · Database architecture · Scalable web apps</p>
+    <div class="hero-cta">
+      <button class="primary-btn" @click="scrollTo('projects')">View Projects</button>
+      <button class="secondary-btn" @click="scrollTo('guestbook')">Leave a Message</button>
+    </div>
   </section>
 
   <!-- ABOUT -->
   <section id="about" class="card">
-    <h2>About Me</h2>
-    <p>
-      I am Jeggy Ocenar, a BSIT student focused on backend systems,
-      database architecture, and scalable web applications.
-    </p>
+    <div class="section-label">01 — About</div>
+    <h2>Who I Am</h2>
+    <div class="about-grid">
+      <div class="about-text">
+        <p>
+          I'm <strong>Jeggy Ocenar</strong>, a BSIT student with a passion for backend systems,
+          database architecture, and building scalable web applications that actually work under pressure.
+        </p>
+        <p>
+          When I'm not writing queries or designing schemas, I'm exploring new frameworks and contributing
+          to projects that challenge my understanding of how the web works at its core.
+        </p>
+      </div>
+      <div class="about-stats">
+        <div class="stat-box">
+          <span class="stat-num">{{ projects.length }}</span>
+          <span class="stat-label">Projects</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-num">{{ skills.length }}+</span>
+          <span class="stat-label">Technologies</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-num">{{ comments.length }}</span>
+          <span class="stat-label">Messages</span>
+        </div>
+      </div>
+    </div>
   </section>
 
   <!-- SKILLS -->
   <section id="skills" class="card">
-    <h2>Technical Skills</h2>
-
+    <div class="section-label">02 — Skills</div>
+    <h2>Technical Stack</h2>
     <div class="skills-grid">
-      <div v-for="skill in skills" :key="skill" class="skill-box">
-        {{ skill }}
+      <div
+        v-for="(skill, i) in skills"
+        :key="skill.name"
+        class="skill-box"
+        :style="{ animationDelay: i * 0.05 + 's' }"
+      >
+        <span class="skill-icon">{{ skill.icon }}</span>
+        <span>{{ skill.name }}</span>
       </div>
     </div>
   </section>
 
   <!-- PROJECTS -->
   <section id="projects" class="card">
+    <div class="section-label">03 — Work</div>
     <h2>Projects</h2>
-
     <div class="projects">
       <div v-for="project in projects" :key="project.title" class="project-card">
+        <div class="project-header">
+          <span class="project-type">{{ project.type }}</span>
+          <span class="project-year">{{ project.year }}</span>
+        </div>
         <h3>{{ project.title }}</h3>
         <p>{{ project.description }}</p>
+        <div class="project-tags">
+          <span v-for="tag in project.tags" :key="tag" class="tag">{{ tag }}</span>
+        </div>
       </div>
     </div>
   </section>
 
   <!-- GUESTBOOK -->
   <section id="guestbook" class="card">
-    <h2>Guestbook ({{ comments.length }} Messages)</h2>
+    <div class="section-label">04 — Guestbook</div>
+    <h2>Leave a Message</h2>
+    <p class="guestbook-sub">Say hi, leave feedback, or just drop a note. All messages are stored in Supabase.</p>
 
-    <form @submit.prevent="addComment">
-      <input v-model="newName" placeholder="Your Name" required>
-      <textarea v-model="newMessage" placeholder="Your Message" required></textarea>
-      <button type="submit">Submit</button>
+    <form @submit.prevent="addComment" class="guestbook-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Name</label>
+          <input v-model="newName" placeholder="Your name" required :disabled="submitting">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Message</label>
+        <textarea v-model="newMessage" placeholder="What's on your mind?" required rows="4" :disabled="submitting"></textarea>
+      </div>
+      <button type="submit" class="submit-btn" :disabled="submitting">
+        <span v-if="submitting" class="spinner"></span>
+        <span v-else>Send Message →</span>
+      </button>
     </form>
 
-    <div v-for="comment in comments" :key="comment.id" class="comment">
-      <strong>{{ comment.name }}</strong>
-      <small>{{ formatDate(comment.created_at) }}</small>
-      <p>{{ comment.message }}</p>
+    <!-- COMMENTS LIST -->
+    <div class="comments-section">
+      <div class="comments-header">
+        <h3>{{ comments.length }} Message{{ comments.length !== 1 ? 's' : '' }}</h3>
+      </div>
+
+      <div v-if="loadingComments" class="loading-state">
+        <div class="skeleton" v-for="n in 3" :key="n"></div>
+      </div>
+
+      <div v-else-if="comments.length === 0" class="empty-state">
+        No messages yet. Be the first!
+      </div>
+
+      <transition-group name="comment-list" tag="div">
+        <div v-for="comment in comments" :key="comment.id" class="comment">
+          <div class="comment-meta">
+            <div class="comment-avatar">{{ comment.name.charAt(0).toUpperCase() }}</div>
+            <div>
+              <strong>{{ comment.name }}</strong>
+              <small>{{ formatDate(comment.created_at) }}</small>
+            </div>
+          </div>
+          <p>{{ comment.message }}</p>
+        </div>
+      </transition-group>
     </div>
   </section>
 
+  <!-- FOOTER -->
+  <footer class="footer">
+    <p>Built with Vue.js + Supabase · Jeggy Ocenar © 2025</p>
+  </footer>
+
 </div>
 
-<!-- SCRIPTS (IMPORTANT ORDER) -->
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="/home/js/vue.js"></script>
-
 </body>
 </html>
