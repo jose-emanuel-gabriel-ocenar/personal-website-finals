@@ -528,24 +528,38 @@ createApp({
     },
 
     async addComment() {
-      if (!this.newName.trim() || !this.newMessage.trim()) return
-      this.submitting = true
-      try {
-        const { error } = await db
-          .from('guestbook')
-          .insert([{ name: this.newName.trim(), message: this.newMessage.trim() }])
-        if (error) throw error
-        this.newName = ''
-        this.newMessage = ''
-        this.showToast('Message sent! 🎉', 'success')
-        await this.fetchComments()
-      } catch(err) {
-        this.showToast('Something went wrong. Try again.', 'error')
-        console.error('Insert error:', err)
-      } finally {
-        this.submitting = false
-      }
-    },
+  if (!this.newName.trim() || !this.newMessage.trim()) return
+  this.submitting = true
+
+  try {
+    const payload = {
+      name: this.newName.trim(),
+      message: this.newMessage.trim(),
+    }
+
+    const { data, error } = await db
+      .from('guestbook')
+      .insert([payload])
+      .select() // forces Supabase to return something (helps debugging)
+
+    console.log('INSERT result:', { data, error })
+
+    if (error) {
+      this.showToast(`Error: ${error.message}`, 'error')
+      return
+    }
+
+    this.newName = ''
+    this.newMessage = ''
+    this.showToast('Message sent! 🎉', 'success')
+    await this.fetchComments()
+  } catch (err) {
+    console.error('Insert crash:', err)
+    this.showToast(`Crash: ${err?.message || 'Unknown'}`, 'error')
+  } finally {
+    this.submitting = false
+  }
+}
 
     showToast(message, type = 'success') {
       this.toast = { show: true, message, type }
