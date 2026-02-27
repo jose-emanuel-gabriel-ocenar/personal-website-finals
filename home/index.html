@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Jeggy Ocenar | Portfolio</title>
+  <title>Jeggy Ocenar | Systems Portfolio</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="/home/css/style.css">
 </head>
@@ -12,21 +12,50 @@
   <!-- HERO -->
   <section class="hero">
     <h1>{{ name }}</h1>
-    <p>{{ role }}</p>
+    <p class="role">{{ role }}</p>
+    <p class="tagline">{{ tagline }}</p>
   </section>
 
   <!-- ABOUT -->
-  <section class="card">
+  <section class="card about">
     <h2>About Me</h2>
     <p>{{ about }}</p>
+
+    <div class="info-grid">
+      <div><strong>Location:</strong><p>{{ location }}</p></div>
+      <div><strong>Education:</strong><p>{{ education }}</p></div>
+      <div><strong>Focus:</strong><p>{{ focus }}</p></div>
+      <div><strong>Career Goal:</strong><p>{{ goal }}</p></div>
+    </div>
   </section>
 
   <!-- SKILLS -->
   <section class="card">
-    <h2>Skills</h2>
+    <h2>Technical Skills</h2>
     <div class="skills-grid">
       <div v-for="skill in skills" :key="skill" class="skill-box">
         {{ skill }}
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section class="card">
+    <h2>Projects</h2>
+    <div class="projects">
+      <div v-for="project in projects" :key="project.title" class="project-card">
+        <h3>{{ project.title }}</h3>
+        <p>{{ project.description }}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TECH STACK -->
+  <section class="card">
+    <h2>Technology Stack</h2>
+    <div class="tech-grid">
+      <div v-for="tech in techStack" :key="tech" class="tech-box">
+        {{ tech }}
       </div>
     </div>
   </section>
@@ -37,7 +66,7 @@
 
     <form @submit.prevent="addComment">
       <input v-model="newName" placeholder="Your Name" required />
-      <textarea v-model="newMessage" placeholder="Your Message" required></textarea>
+      <textarea v-model="newMessage" placeholder="Leave a message..." required></textarea>
       <button type="submit">Post Comment</button>
     </form>
 
@@ -49,6 +78,10 @@
     </div>
   </section>
 
+  <footer>
+    © 2026 {{ name }} | Built with Vue & Supabase
+  </footer>
+
 </div>
 
 <script src="https://unpkg.com/vue@3.4.21/dist/vue.global.js"></script>
@@ -56,4 +89,4 @@
 <script src="/home/js/vue.js"></script>
 
 </body>
-</html>>
+</html>

@@ -8,17 +8,49 @@ const app = Vue.createApp({
   data() {
     return {
       name: "Jeggy Ocenar",
-      role: "Aspiring System Administrator",
-      about: "Passionate about system infrastructure, cloud environments, and backend technologies.",
+      role: "Aspiring System Administrator & Future System Architect",
+      tagline: "Designing scalable systems and learning infrastructure engineering.",
+
+      about: "I am an Information Technology student passionate about backend systems, infrastructure management, and cloud technologies. I enjoy understanding how distributed systems work and how scalable architectures are built.",
+
+      location: "Philippines",
+      education: "BS Information Technology",
+      focus: "Infrastructure & Cloud Systems",
+      goal: "To become a professional System Administrator and eventually move into System Architecture.",
 
       skills: [
-        "Linux",
-        "Networking",
-        "HTML",
-        "CSS",
+        "Linux Administration",
+        "Networking Fundamentals",
+        "HTML & CSS",
         "JavaScript",
         "Vue.js",
-        "GitHub"
+        "Git & GitHub",
+        "Basic Server Deployment",
+        "Database Fundamentals"
+      ],
+
+      projects: [
+        {
+          title: "Vue Portfolio Website",
+          description: "Personal responsive portfolio deployed on Vercel."
+        },
+        {
+          title: "Supabase Guestbook System",
+          description: "Implemented real-time comment storage using Supabase."
+        },
+        {
+          title: "Linux Server Practice",
+          description: "Configured Apache/Nginx on virtual machine environment."
+        }
+      ],
+
+      techStack: [
+        "Vue 3",
+        "Supabase",
+        "Vercel",
+        "HTML5",
+        "CSS3 (Flexbox & Grid)",
+        "JavaScript ES6"
       ],
 
       comments: [],
@@ -43,10 +75,7 @@ const app = Vue.createApp({
 
     async addComment() {
       await db.from("comments").insert([
-        {
-          name: this.newName,
-          message: this.newMessage
-        }
+        { name: this.newName, message: this.newMessage }
       ])
 
       this.newName = ""
