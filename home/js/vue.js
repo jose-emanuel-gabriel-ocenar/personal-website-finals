@@ -4,69 +4,52 @@ const supabaseUrl = 'https://tlvpjszaswkcymqtqhgw.supabase.co'
 const supabaseKey = sb_publishable_XsGAqUcnIFhcG7l11TMHRA_3c6extMh
 const db = createClient(supabaseUrl, supabaseKey)
 
-const app = Vue.createApp({
+const { createApp } = Vue
+
+createApp({
   data() {
     return {
-      isDark: false,
-      filter: "all",
-
+      name: "Jeggy Ocenar",
+      role: "BSIT Student | Future Systems Architect",
+      isDark: true,
       skills: [
-        { name: "HTML & CSS", type: "frontend" },
-        { name: "JavaScript", type: "frontend" },
-        { name: "Vue.js", type: "frontend" },
-        { name: "Linux Administration", type: "systems" },
-        { name: "Networking Fundamentals", type: "systems" },
-        { name: "Basic Server Deployment", type: "systems" }
+        { name: "HTML" },
+        { name: "CSS" },
+        { name: "JavaScript" },
+        { name: "Vue.js" },
+        { name: "Supabase" },
+        { name: "System Administration" }
       ],
-
-      comments: [],
-      newName: "",
-      newMessage: "",
-      loading: false
+      projects: [
+        {
+          title: "Personal Portfolio Website",
+          description: "Built using Vue and Supabase integration."
+        },
+        {
+          title: "Student Management System",
+          description: "CRUD system with authentication and database storage."
+        }
+      ]
     }
-  },
-
-  computed: {
-    filteredSkills() {
-      if (this.filter === "all") return this.skills
-      return this.skills.filter(skill => skill.type === this.filter)
-    }
-  },
-
-  async mounted() {
-    this.fetchComments()
   },
 
   methods: {
     toggleDark() {
       this.isDark = !this.isDark
+      document.body.style.background =
+        this.isDark
+          ? "linear-gradient(135deg, #0f172a, #1e293b)"
+          : "#f1f5f9"
+
+      document.body.style.color =
+        this.isDark ? "#f1f5f9" : "#0f172a"
     },
 
-    scrollTo(section) {
-      document.getElementById(section).scrollIntoView({ behavior: "smooth" })
-    },
-
-    async fetchComments() {
-      this.loading = true
-      const { data } = await db
-        .from("comments")
-        .select("*")
-        .order("created_at", { ascending: false })
-
-      this.comments = data
-      this.loading = false
-    },
-
-    async addComment() {
-      await db.from("comments").insert([
-        { name: this.newName, message: this.newMessage }
-      ])
-
-      this.newName = ""
-      this.newMessage = ""
-      this.fetchComments()
+    scrollToSection(id) {
+      const section = document.getElementById(id)
+      if (section) {
+        section.scrollIntoView({ behavior: "smooth" })
+      }
     }
   }
-})
-
-app.mount("#app")
+}).mount("#app")

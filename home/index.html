@@ -10,18 +10,19 @@
 <div id="app" :class="{ dark: isDark }">
 
   <!-- NAVBAR -->
-  <nav class="navbar">
-    <div class="logo">JO</div>
-    <div class="nav-links">
-      <a @click="scrollTo('about')">About</a>
-      <a @click="scrollTo('skills')">Skills</a>
-      <a @click="scrollTo('projects')">Projects</a>
-      <a @click="scrollTo('guestbook')">Guestbook</a>
-      <button class="dark-btn" @click="toggleDark">
-        {{ isDark ? "Light Mode" : "Dark Mode" }}
-      </button>
-    </div>
-  </nav>
+ <div class="navbar">
+  <div class="logo">Jeggy.dev</div>
+
+  <div class="nav-links">
+    <a @click="scrollToSection('about')">About</a>
+    <a @click="scrollToSection('skills')">Skills</a>
+    <a @click="scrollToSection('projects')">Projects</a>
+    <a @click="scrollToSection('contact')">Contact</a>
+    <button @click="toggleDark">
+      {{ isDark ? "Light Mode" : "Dark Mode" }}
+    </button>
+  </div>
+</div>
 
   <!-- HERO -->
   <section class="hero">
@@ -126,7 +127,7 @@
 
 </div>
 
-<script src="https://unpkg.com/vue@3.4.21/dist/vue.global.js"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="/home/js/vue.js"></script>
 
