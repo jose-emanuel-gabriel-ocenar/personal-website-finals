@@ -67,12 +67,19 @@ createApp({
   },
 
   async mounted() {
-    // Load dark mode preference
-    const saved = localStorage.getItem("theme")
-    if (saved === "light") {
-      this.isDark = false
-      document.body.classList.remove("dark")
-      document.body.classList.add("light")
+    // Load dark mode preference safely
+    try {
+      const saved = localStorage.getItem("theme")
+      if (saved === "light") {
+        this.isDark = false
+        document.body.classList.remove("dark")
+        document.body.classList.add("light")
+      } else {
+        // Ensure dark class is set on load
+        document.body.classList.add("dark")
+      }
+    } catch (e) {
+      document.body.classList.add("dark")
     }
 
     // Scroll listener for navbar shadow
@@ -149,12 +156,11 @@ createApp({
       if (this.isDark) {
         document.body.classList.remove("light")
         document.body.classList.add("dark")
-        localStorage.setItem("theme", "dark")
       } else {
         document.body.classList.remove("dark")
         document.body.classList.add("light")
-        localStorage.setItem("theme", "light")
       }
+      try { localStorage.setItem("theme", this.isDark ? "dark" : "light") } catch (e) {}
     },
 
     scrollTo(id) {

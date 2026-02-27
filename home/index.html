@@ -47,11 +47,11 @@
   <!-- MOBILE MENU OVERLAY -->
   <transition name="slide">
     <div v-if="menuOpen" class="mobile-menu">
-      <a @click="scrollTo('about'); menuOpen = false">About</a>
-      <a @click="scrollTo('skills'); menuOpen = false">Skills</a>
-      <a @click="scrollTo('projects'); menuOpen = false">Projects</a>
-      <a @click="scrollTo('guestbook'); menuOpen = false">Guestbook</a>
-      <button class="theme-btn" @click="toggleDark; menuOpen = false">
+      <a @click="scrollTo('about'), menuOpen = false">About</a>
+      <a @click="scrollTo('skills'), menuOpen = false">Skills</a>
+      <a @click="scrollTo('projects'), menuOpen = false">Projects</a>
+      <a @click="scrollTo('guestbook'), menuOpen = false">Guestbook</a>
+      <button class="theme-btn" @click="toggleDark(), menuOpen = false">
         <span v-if="isDark">☀ Light Mode</span>
         <span v-else>☾ Dark Mode</span>
       </button>
@@ -175,7 +175,7 @@
         No messages yet. Be the first!
       </div>
 
-      <transition-group name="comment-list" tag="div">
+      <transition-group v-if="!loadingComments && comments.length > 0" name="comment-list" tag="div">
         <div v-for="comment in comments" :key="comment.id" class="comment">
           <div class="comment-meta">
             <div class="comment-avatar">{{ comment.name.charAt(0).toUpperCase() }}</div>
