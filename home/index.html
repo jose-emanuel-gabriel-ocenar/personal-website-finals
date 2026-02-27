@@ -1,133 +1,90 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Jeggy Ocenar | Systems Portfolio</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <title>Jeggy Ocenar | Portfolio</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="/home/css/style.css">
 </head>
 <body>
 
-<div id="app" :class="{ dark: isDark }">
+<div id="app">
 
   <!-- NAVBAR -->
- <div class="navbar">
-  <div class="logo">Jeggy.dev</div>
+  <div class="navbar">
+    <div class="logo">Jeggy.dev</div>
 
-  <div class="nav-links">
-    <a @click="scrollToSection('about')">About</a>
-    <a @click="scrollToSection('skills')">Skills</a>
-    <a @click="scrollToSection('projects')">Projects</a>
-    <a @click="scrollToSection('contact')">Contact</a>
-    <button @click="toggleDark">
-      {{ isDark ? "Light Mode" : "Dark Mode" }}
-    </button>
+    <div class="nav-links">
+      <a @click="scrollTo('about')">About</a>
+      <a @click="scrollTo('skills')">Skills</a>
+      <a @click="scrollTo('projects')">Projects</a>
+      <a @click="scrollTo('guestbook')">Guestbook</a>
+      <button @click="toggleDark">
+        {{ isDark ? "Light Mode" : "Dark Mode" }}
+      </button>
+    </div>
   </div>
-</div>
 
   <!-- HERO -->
   <section class="hero">
-    <h1>Jeg Ocenar</h1>
-    <h2>Aspiring System Administrator & Infrastructure Engineer</h2>
-    <p>
-      Focused on building scalable systems, managing infrastructure, and learning cloud architecture.
-    </p>
-    <button @click="scrollTo('guestbook')" class="primary-btn">
-      Leave a Message
-    </button>
+    <h1>{{ name }}</h1>
+    <h2>{{ role }}</h2>
+    <p>Aspiring Systems Architect | Backend Developer</p>
   </section>
 
   <!-- ABOUT -->
-  <section id="about" class="section card">
+  <section id="about" class="card">
     <h2>About Me</h2>
     <p>
-      I am an Information Technology student passionate about backend systems,
-      server environments, and infrastructure design. I enjoy understanding how
-      systems operate behind the scenes — from networking layers to database
-      architecture and deployment pipelines.
+      I am Jeggy Ocenar, a BSIT student focused on backend systems,
+      database architecture, and scalable web applications.
     </p>
-
-    <div class="info-grid">
-      <div><strong>Location:</strong><p>Taguig, Philippines</p></div>
-      <div><strong>Education:</strong><p>BS Information Technology</p></div>
-      <div><strong>Specialization:</strong><p>Game Development</p></div>
-      <div><strong>Career Goal:</strong><p>Developer</p></div>
-    </div>
   </section>
 
   <!-- SKILLS -->
-  <section id="skills" class="section card">
+  <section id="skills" class="card">
     <h2>Technical Skills</h2>
 
-    <div class="filter-buttons">
-      <button @click="filter = 'all'">All</button>
-      <button @click="filter = 'frontend'">Frontend</button>
-      <button @click="filter = 'systems'">Systems</button>
-    </div>
-
     <div class="skills-grid">
-      <div v-for="skill in filteredSkills" :key="skill.name" class="skill-box">
-        {{ skill.name }}
+      <div v-for="skill in skills" :key="skill" class="skill-box">
+        {{ skill }}
       </div>
     </div>
   </section>
 
   <!-- PROJECTS -->
-  <section id="projects" class="section card">
+  <section id="projects" class="card">
     <h2>Projects</h2>
+
     <div class="projects">
-      <div class="project-card">
-        <h3>Vue + Supabase Guestbook</h3>
-        <p>
-          Built a responsive portfolio website with integrated database
-          functionality using Supabase for real-time comment storage.
-        </p>
-      </div>
-
-      <div class="project-card">
-        <h3>Linux Server Practice</h3>
-        <p>
-          Configured Apache/Nginx web server on virtual machine environment,
-          practiced service management and basic security hardening.
-        </p>
-      </div>
-
-      <div class="project-card">
-        <h3>Network Simulation</h3>
-        <p>
-          Designed small network topology using Packet Tracer to simulate routing
-          and switching fundamentals.
-        </p>
+      <div v-for="project in projects" :key="project.title" class="project-card">
+        <h3>{{ project.title }}</h3>
+        <p>{{ project.description }}</p>
       </div>
     </div>
   </section>
 
   <!-- GUESTBOOK -->
-  <section id="guestbook" class="section card">
+  <section id="guestbook" class="card">
     <h2>Guestbook ({{ comments.length }} Messages)</h2>
 
     <form @submit.prevent="addComment">
-      <input v-model="newName" placeholder="Your Name" required />
-      <textarea v-model="newMessage" placeholder="Write your message..." required></textarea>
-      <button type="submit">Post Message</button>
+      <input v-model="newName" placeholder="Your Name" required>
+      <textarea v-model="newMessage" placeholder="Your Message" required></textarea>
+      <button type="submit">Submit</button>
     </form>
 
-    <p v-if="loading">Loading messages...</p>
-
-    <div class="comments">
-      <div v-for="comment in comments" :key="comment.id" class="comment">
-        <strong>{{ comment.name }}</strong>
-        <p>{{ comment.message }}</p>
-      </div>
+    <div v-for="comment in comments" :key="comment.id" class="comment">
+      <strong>{{ comment.name }}</strong>
+      <small>{{ formatDate(comment.created_at) }}</small>
+      <p>{{ comment.message }}</p>
     </div>
   </section>
 
-  <footer>
-   2026 Jeggy Ocenar | Built with Vue 3 & Supabase | Deployed on Vercel
-  </footer>
-
 </div>
 
-  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<!-- SCRIPTS (IMPORTANT ORDER) -->
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="/home/js/vue.js"></script>
 
