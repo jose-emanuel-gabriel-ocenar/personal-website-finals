@@ -9,7 +9,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root { --accent: #00e5a0; --accent2: #7c6af7; --transition: 0.25s ease; }
 
     body.dark {
@@ -31,7 +30,8 @@
     /* TOAST */
     .toast {
       position: fixed; top: 24px; right: 24px; padding: 14px 22px; border-radius: 12px;
-      font-family: 'Space Mono', monospace; font-size: 14px; z-index: 9999; max-width: 320px;
+      font-family: 'Space Mono', monospace; font-size: 14px; z-index: 9999; max-width: 360px;
+      word-break: break-word;
     }
     .toast.success { background: rgba(0,229,160,0.15); border: 1px solid var(--accent); color: var(--accent); }
     .toast.error   { background: rgba(239,68,68,0.15);  border: 1px solid #ef4444;     color: #ef4444; }
@@ -303,11 +303,11 @@
   <!-- MOBILE MENU -->
   <transition name="slide">
     <div v-if="menuOpen" class="mobile-menu">
-      <a @click="scrollTo('about'), menuOpen = false">About</a>
-      <a @click="scrollTo('skills'), menuOpen = false">Skills</a>
-      <a @click="scrollTo('projects'), menuOpen = false">Projects</a>
-      <a @click="scrollTo('guestbook'), menuOpen = false">Guestbook</a>
-      <button class="theme-btn" @click="toggleDark(), menuOpen = false">
+      <a @click="scrollTo('about'); menuOpen = false">About</a>
+      <a @click="scrollTo('skills'); menuOpen = false">Skills</a>
+      <a @click="scrollTo('projects'); menuOpen = false">Projects</a>
+      <a @click="scrollTo('guestbook'); menuOpen = false">Guestbook</a>
+      <button class="theme-btn" @click="toggleDark(); menuOpen = false">
         <span v-if="isDark">☀ Light Mode</span>
         <span v-else>☾ Dark Mode</span>
       </button>
@@ -399,16 +399,19 @@
       <div class="comments-header">
         <h3>{{ comments.length }} Message{{ comments.length !== 1 ? 's' : '' }}</h3>
       </div>
+
       <div v-if="loadingComments" class="loading-state">
         <div class="skeleton" v-for="n in 3" :key="n"></div>
       </div>
+
       <div v-else-if="comments.length === 0" class="empty-state">
         No messages yet. Be the first! 👋
       </div>
+
       <transition-group v-else name="comment-list" tag="div">
         <div v-for="comment in comments" :key="comment.id" class="comment">
           <div class="comment-meta">
-            <div class="comment-avatar">{{ comment.name.charAt(0).toUpperCase() }}</div>
+            <div class="comment-avatar">{{ (comment.name || '?').charAt(0).toUpperCase() }}</div>
             <div>
               <strong>{{ comment.name }}</strong>
               <small>{{ formatDate(comment.created_at) }}</small>
@@ -429,13 +432,12 @@
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-// Wait for both scripts to load before running
 const { createApp } = Vue
 const { createClient } = supabase
 
+// ✅ your existing Supabase project config (keep anon key only)
 const SUPABASE_URL = 'https://tlvpjszaswkcymqtqhgw.supabase.co'
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRsdnBqc3phc3drY3ltcXRxaGd3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwOTU2NTgsImV4cCI6MjA4NzY3MTY1OH0.azpCfHpedaiu1f5w1c4DiuHtQlpj1bUjxgSsnPfZh8Y'
-
 const db = createClient(SUPABASE_URL, SUPABASE_KEY)
 
 createApp({
@@ -488,20 +490,21 @@ createApp({
   },
 
   async mounted() {
-    // Restore saved theme
+    // theme restore
     try {
       const saved = localStorage.getItem('theme')
       if (saved === 'light') {
         this.isDark = false
         document.body.className = 'light'
       } else {
+        this.isDark = true
         document.body.className = 'dark'
       }
     } catch(e) {
       document.body.className = 'dark'
     }
 
-    // Navbar scroll shadow
+    // navbar shadow
     window.addEventListener('scroll', () => {
       this.isScrolled = window.scrollY > 20
     })
@@ -510,64 +513,17 @@ createApp({
   },
 
   methods: {
-    async fetchComments() {
-      this.loadingComments = true
-      try {
-        const { data, error } = await db
-          .from('guestbook')
-          .select('*')
-          .order('created_at', { ascending: false })
-        if (error) throw error
-        this.comments = data || []
-      } catch(err) {
-        this.showToast('Could not load messages.', 'error')
-        console.error('Fetch error:', err)
-      } finally {
-        this.loadingComments = false
-      }
-    },
-
-    async addComment() {
-  if (!this.newName.trim() || !this.newMessage.trim()) return
-  this.submitting = true
-
-  try {
-    const payload = {
-      name: this.newName.trim(),
-      message: this.newMessage.trim(),
-    }
-
-    const { data, error } = await db
-      .from('guestbook')
-      .insert([payload])
-      .select() // forces Supabase to return something (helps debugging)
-
-    console.log('INSERT result:', { data, error })
-
-    if (error) {
-      this.showToast(`Error: ${error.message}`, 'error')
-      return
-    }
-
-    this.newName = ''
-    this.newMessage = ''
-    this.showToast('Message sent! 🎉', 'success')
-    await this.fetchComments()
-  } catch (err) {
-    console.error('Insert crash:', err)
-    this.showToast(`Crash: ${err?.message || 'Unknown'}`, 'error')
-  } finally {
-    this.submitting = false
-  }
-}
-
     showToast(message, type = 'success') {
       this.toast = { show: true, message, type }
-      setTimeout(() => { this.toast.show = false }, 3500)
+      clearTimeout(this._toastTimer)
+      this._toastTimer = setTimeout(() => { this.toast.show = false }, 4200)
     },
 
     formatDate(date) {
-      return new Date(date).toLocaleDateString('en-US', {
+      if (!date) return ''
+      const d = new Date(date)
+      if (Number.isNaN(d.getTime())) return String(date)
+      return d.toLocaleDateString('en-US', {
         year: 'numeric', month: 'short', day: 'numeric',
         hour: '2-digit', minute: '2-digit'
       })
@@ -582,6 +538,77 @@ createApp({
     scrollTo(id) {
       const el = document.getElementById(id)
       if (el) el.scrollIntoView({ behavior: 'smooth' })
+    },
+
+    async fetchComments() {
+      this.loadingComments = true
+      try {
+        const { data, error } = await db
+          .from('guestbook')
+          .select('*')
+          .order('created_at', { ascending: false })
+
+        console.log('FETCH result:', { data, error })
+
+        if (error) {
+          this.showToast(`Load error: ${error.message}`, 'error')
+          this.comments = []
+          return
+        }
+
+        this.comments = data || []
+      } catch (err) {
+        console.error('Fetch crash:', err)
+        this.showToast(`Load crash: ${err?.message || 'Unknown'}`, 'error')
+        this.comments = []
+      } finally {
+        this.loadingComments = false
+      }
+    },
+
+    async addComment() {
+      const name = this.newName.trim()
+      const message = this.newMessage.trim()
+
+      if (!name || !message) {
+        this.showToast('Please fill in both fields.', 'error')
+        return
+      }
+
+      // optional: max length
+      if (message.length > 250) {
+        this.showToast('Max 250 characters only.', 'error')
+        return
+      }
+
+      this.submitting = true
+
+      try {
+        const payload = { name, message }
+
+        const { data, error } = await db
+          .from('guestbook')
+          .insert([payload])
+          .select() // helps return row + clear error
+
+        console.log('INSERT result:', { data, error })
+
+        if (error) {
+          // Most common: RLS/policy
+          this.showToast(`Save error: ${error.message}`, 'error')
+          return
+        }
+
+        this.newName = ''
+        this.newMessage = ''
+        this.showToast('Message sent! 🎉', 'success')
+        await this.fetchComments()
+      } catch (err) {
+        console.error('Insert crash:', err)
+        this.showToast(`Save crash: ${err?.message || 'Unknown'}`, 'error')
+      } finally {
+        this.submitting = false
+      }
     }
   }
 }).mount('#app')
