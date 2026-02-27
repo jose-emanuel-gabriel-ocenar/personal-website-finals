@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Jeggy Ocenar | Portfolio</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+
+<div id="app">
+
+  <!-- HERO -->
+  <section class="hero">
+    <h1>{{ name }}</h1>
+    <p>{{ role }}</p>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="card">
+    <h2>About Me</h2>
+    <p>{{ about }}</p>
+  </section>
+
+  <!-- SKILLS -->
+  <section class="card">
+    <h2>Skills</h2>
+    <div class="skills-grid">
+      <div v-for="skill in skills" :key="skill" class="skill-box">
+        {{ skill }}
+      </div>
+    </div>
+  </section>
+
+  <!-- GUESTBOOK -->
+  <section class="card">
+    <h2>Guestbook</h2>
+
+    <form @submit.prevent="addComment">
+      <input v-model="newName" placeholder="Your Name" required />
+      <textarea v-model="newMessage" placeholder="Your Message" required></textarea>
+      <button type="submit">Post Comment</button>
+    </form>
+
+    <div class="comments">
+      <div v-for="comment in comments" :key="comment.id" class="comment">
+        <strong>{{ comment.name }}</strong>
+        <p>{{ comment.message }}</p>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script src="https://unpkg.com/vue@3.4.21/dist/vue.global.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./js/vue.js"></script>
+
+</body>
+</html>>
